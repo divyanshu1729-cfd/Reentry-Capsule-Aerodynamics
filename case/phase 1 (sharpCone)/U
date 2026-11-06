@@ -1,0 +1,72 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Version: 13
+    \\  /    A nd           |
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (782.31 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform (782.31 0 0);
+    }
+
+    farfield
+    {
+        type            freestreamVelocity;
+        freestreamValue uniform (782.31 0 0);
+    }
+
+    outlet
+    {
+        type            zeroGradient;
+    }
+
+    noseCap
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    coneWall
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    numericalAfterbody
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    wedgeBack
+    {
+        type            wedge;
+    }
+
+    wedgeFront
+    {
+        type            wedge;
+    }
+
+    axis
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //
