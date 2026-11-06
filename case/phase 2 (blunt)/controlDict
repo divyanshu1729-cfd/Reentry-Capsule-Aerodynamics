@@ -1,0 +1,150 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format          ascii;
+    class           dictionary;
+    location        "system";
+    object          controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     foamRun;
+
+solver          shockFluid;
+
+startFrom       startTime;
+
+startTime       6e-05;
+
+stopAt          endTime;
+
+endTime         7e-05;
+
+deltaT          1e-09;
+
+writeControl    runTime;
+
+writeInterval   5e-07;
+
+purgeWrite      0;
+
+writeFormat     binary;
+
+writePrecision  15;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   10;
+
+runTimeModifiable true;
+
+adjustTimeStep  no;
+
+functions
+{
+    pressureCoefficient
+    {
+        type            pressure;
+        libs            ( "libfieldFunctionObjects.so" );
+        field           p;
+        result          CpAero;
+        calcTotal       no;
+        calcCoeff       yes;
+        pInf            1433.84;
+        UInf            ( 782.31 0 0 );
+        rhoInf          0.0806927;
+        executeControl  timeStep;
+        executeInterval 1;
+        writeControl    writeTime;
+    }
+    CpForebody
+    {
+        type            surfaceFieldValue;
+        libs            ( "libfieldFunctionObjects.so" );
+        log             true;
+        writeFields     false;
+        patches         ( noseCap coneWall );
+        operation       sum;
+        weightField     CpAero;
+        fields          ( Sf );
+        writeControl    timeStep;
+        writeInterval   50;
+    }
+    forebodyForces
+    {
+        type            forces;
+        libs            ( "libforces.so" );
+        log             true;
+        patches         ( noseCap coneWall );
+        p               p;
+        U               U;
+        rho             rho;
+        pRef            1433.84;
+        CofR            ( 0 0 0 );
+        writeControl    timeStep;
+        writeInterval   50;
+    }
+    forebodyForceCoeffs
+    {
+        type            forceCoeffs;
+        libs            ( "libforces.so" );
+        log             true;
+        patches         ( noseCap coneWall );
+        p               p;
+        U               U;
+        rho             rho;
+        rhoInf          0.0806927;
+        pRef            1433.84;
+        CofR            ( 0 0 0 );
+        liftDir         ( 0 1 0 );
+        dragDir         ( 1 0 0 );
+        pitchAxis       ( 0 0 1 );
+        magUInf         782.31;
+        lRef            0.0762;
+        Aref            6.32581e-05;
+        writeControl    timeStep;
+        writeInterval   50;
+    }
+    forebodyWallHeatFlux
+    {
+        type            wallHeatFlux;
+        libs            ( "libfieldFunctionObjects.so" );
+        patches         ( noseCap coneWall );
+        writeControl    timeStep;
+        writeInterval   50;
+    }
+    forebodyWallShearStress
+    {
+        type            wallShearStress;
+        libs            ( "libfieldFunctionObjects.so" );
+        patches         ( noseCap coneWall );
+        writeControl    timeStep;
+        writeInterval   50;
+    }
+    wallResolution
+    {
+        type            yPlus;
+        libs            ( "libfieldFunctionObjects.so" );
+        writeControl    timeStep;
+        writeInterval   50;
+    }
+    yPlus
+    {
+        type            yPlus;
+        libs            ( "libfieldFunctionObjects.so" );
+        log             true;
+        executeControl  writeTime;
+        writeControl    writeTime;
+    }
+}
+
+
+// ************************************************************************* //
